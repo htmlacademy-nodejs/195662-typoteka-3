@@ -1,7 +1,7 @@
 # Личный проект «Типотека» [![Build status][travis-image]][travis-url]
 
 * Студент: [Александр Аздахов](https://up.htmlacademy.ru/nodejs/3/user/195662).
-* Наставник: `Неизвестно`.
+* Наставник: [Константин Серебрянский](https://htmlacademy.ru/profile/id185658).
 
 ---
 
