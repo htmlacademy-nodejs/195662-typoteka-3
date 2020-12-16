@@ -2,8 +2,10 @@
 
 const fs = require(`fs`);
 const {getRandomInt, shuffle} = require(`../../utils`);
+const {ExitCode} = require(`../../constants`);
 
 const DEFAULT_COUNT = 1;
+const MAX_COUNT = 1000;
 const FILE_NAME = `mock.json`;
 const TITLES = [
   `Ёлки. История деревьев`,
@@ -76,8 +78,11 @@ module.exports = {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
-    if (countOffer > 1000) {
-      return console.error(`Не больше 1000 публикаций`);
+    if (countOffer > MAX_COUNT) {
+      console.info(`Не больше 1000 публикаций`);
+      process.exit(ExitCode.error);
+      // я хотел сделать return, но у меня ругается линтер на consistent-return
+      // поэтому вопрос, можно ли использовать process.exit в этом месте?
     }
 
     const content = JSON.stringify(generateOffers(countOffer));
@@ -86,7 +91,6 @@ module.exports = {
       if (err) {
         return console.error(`Can't write data to file...`);
       }
-
       return console.info(`Operation success. File created.`);
     });
   }
