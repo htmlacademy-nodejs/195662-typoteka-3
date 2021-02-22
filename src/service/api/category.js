@@ -10,7 +10,6 @@ module.exports = (app, service) => {
 
   route.get(`/`, (req, res) => {
     const categories = service.findAll();
-    res.status(HttpCode.OK)
-      .json(categories);
+    res.status(HttpCode.OK).json(categories);
   });
 };

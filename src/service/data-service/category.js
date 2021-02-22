@@ -6,7 +6,7 @@ class CategoryService {
   }
 
   findAll() {
-    return new Set(this._articles.map((item) => item.category).flat());
+    return new Set(this._articles.map((article) => article.category).flat());
   }
 }
 
