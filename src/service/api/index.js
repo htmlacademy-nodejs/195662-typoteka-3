@@ -12,7 +12,7 @@ const app = new Router();
 module.exports = app;
 
 (async () => {
-  const mockData = getMockData();
+  const mockData = await getMockData();
 
   category(app, new CategoryService(mockData));
 })();

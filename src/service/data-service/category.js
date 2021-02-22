@@ -6,9 +6,7 @@ class CategoryService {
   }
 
   findAll() {
-    console.log(123);
-    // const categories = this._articles.map((item) => item.category);
-    return [`aa`, `bb`];
+    return new Set(this._articles.map((item) => item.category).flat());
   }
 }
 
