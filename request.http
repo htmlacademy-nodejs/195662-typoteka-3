@@ -4,7 +4,7 @@ GET http://localhost:3000/api/categories HTTP/1.1
 ###
 
 # Поиск
-GET http://localhost:3000/api/search?query=Рок HTTP/1.1
+GET http://localhost:3000/api/search?query=РОК HTTP/1.1
 
 ###
 
@@ -50,3 +50,8 @@ Content-Type: application/json
 
 # Удаление поста
 DELETE http://localhost:3000/api/articles/jsx23p HTTP/1.1
+
+###
+
+# Получение комментариев поста
+GET http://localhost:3000/api/articles/GWc2ik/comments HTTP/1.1
