@@ -13,7 +13,7 @@ class ArticleService {
   }
 
   findOne(id) {
-    return this._articles.find((article) => article.id === id);
+    return this._articles.find((item) => item.id === id);
   }
 
   create(article) {
@@ -25,6 +25,27 @@ class ArticleService {
     this._articles.push(newArticle);
 
     return newArticle;
+  }
+
+  update(id, article) {
+    const oldArticle = this._articles.find((item) => item.id === id);
+
+    if (!oldArticle) {
+      return null;
+    }
+
+    return Object.assign(oldArticle, article);
+  }
+
+  remove(id) {
+    const article = this._articles.find((item) => item.id === id);
+
+    if (!article) {
+      return null;
+    }
+
+    this._articles = this._articles.filter((item) => item.id !== id);
+    return article;
   }
 }
 

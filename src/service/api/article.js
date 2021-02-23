@@ -29,4 +29,28 @@ module.exports = (app, articleService) => {
     const article = articleService.create(req.body);
     return res.status(HttpCode.CREATED).send(article);
   });
+
+  route.put(`/:articleId`, articleValidator, (req, res) => {
+    const {articleId} = req.params;
+
+    const article = articleService.update(articleId, req.body);
+
+    if (!article) {
+      return res.status(HttpCode.NOT_FOUND).send(`Not found with ${articleId}`);
+    }
+
+    return res.status(HttpCode.OK).json(article);
+  });
+
+  route.delete(`/:articleId`, (req, res) => {
+    const {articleId} = req.params;
+
+    const article = articleService.remove(articleId);
+
+    if (!article) {
+      return res.status(HttpCode.NOT_FOUND).send(`Not found with ${articleId}`);
+    }
+
+    return res.status(HttpCode.OK).send(article);
+  });
 };
