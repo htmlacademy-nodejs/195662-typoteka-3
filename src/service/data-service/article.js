@@ -27,24 +27,12 @@ class ArticleService {
     return newArticle;
   }
 
-  update(id, article) {
-    const oldArticle = this._articles.find((item) => item.id === id);
-
-    if (!oldArticle) {
-      return null;
-    }
-
+  update(oldArticle, article) {
     return Object.assign(oldArticle, article);
   }
 
-  remove(id) {
-    const article = this._articles.find((item) => item.id === id);
-
-    if (!article) {
-      return null;
-    }
-
-    this._articles = this._articles.filter((item) => item.id !== id);
+  remove(article) {
+    this._articles = this._articles.filter((item) => item.id !== article.id);
     return article;
   }
 }
