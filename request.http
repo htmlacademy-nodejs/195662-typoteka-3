@@ -14,7 +14,7 @@ GET http://localhost:3000/api/articles HTTP/1.1
 ###
 
 # Пост
-GET http://localhost:3000/api/articles/ic8jsr HTTP/1.1
+GET http://localhost:3000/api/articles/GWc2ik HTTP/1.1
 
 ###
 
@@ -55,3 +55,8 @@ DELETE http://localhost:3000/api/articles/jsx23p HTTP/1.1
 
 # Получение комментариев поста
 GET http://localhost:3000/api/articles/GWc2ik/comments HTTP/1.1
+
+###
+
+# Удаление комментариев поста
+DELETE http://localhost:3000/api/articles/GWc2ik/comments/fXLxEk HTTP/1.1

@@ -1,8 +1,19 @@
 'use strict';
 
 class CommentService {
-  findAll(offer) {
-    return offer.comments;
+  findAll(article) {
+    return article.comments;
+  }
+  remove(article, commentId) {
+    const comment = article.comments.find((item) => item.id === commentId);
+
+    if (!comment) {
+      return null;
+    }
+
+    article.comments = article.comments.filter((item) => item.id !== commentId);
+
+    return comment;
   }
 }
 

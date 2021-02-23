@@ -62,4 +62,17 @@ module.exports = (app, articleService, commentService) => {
 
     res.status(HttpCode.OK).json(comments);
   });
+
+  route.delete(`/:articleId/comments/:commentId`, articleExists(articleService), (req, res) => {
+    const {article} = res.locals;
+    const {commentId} = req.params;
+
+    const comment = commentService.remove(article, commentId);
+
+    if (!comment) {
+      return res.status(HttpCode.NOT_FOUND).send(`Not found with ${commentId}`);
+    }
+
+    return res.status(HttpCode.OK).json(comment);
+  });
 };
