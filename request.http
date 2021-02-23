@@ -14,7 +14,7 @@ GET http://localhost:3000/api/articles HTTP/1.1
 ###
 
 # Пост
-GET http://localhost:3000/api/articles/GWc2ik HTTP/1.1
+GET http://localhost:3000/api/articles/ic8jsr HTTP/1.1
 
 ###
 
@@ -59,4 +59,14 @@ GET http://localhost:3000/api/articles/GWc2ik/comments HTTP/1.1
 ###
 
 # Удаление комментариев поста
-DELETE http://localhost:3000/api/articles/GWc2ik/comments/fXLxEk HTTP/1.1
+DELETE http://localhost:3000/api/articles/ic8jsr/comments/nZSe_fs HTTP/1.1
+
+###
+
+# Добавление нового комментария
+POST http://localhost:3000/api/articles/ic8jsr/comments HTTP/1.1
+Content-Type: application/json
+
+{
+  "text": "Тест добавления комментария"
+}
