@@ -3,11 +3,13 @@
 const express = require(`express`);
 const chalk = require(`chalk`);
 const routes = require(`../api`);
+const {getLogger} = require(`../lib/logger`);
 const {HttpCode, API_PREFIX} = require(`../../constants`);
 
 const DEFAULT_PORT = 3000;
 
 const app = express();
+const logger = getLogger({name: `api`});
 
 app.use(express.json());
 app.use(API_PREFIX, routes);
@@ -25,12 +27,12 @@ module.exports = {
     try {
       app.listen(port, (error) => {
         if (error) {
-          return console.error(`Ошибка при создании сервера`, error);
+          return logger.error(`An error occured on server creation: ${error.message}`);
         }
-        return console.info(chalk.green(`Ожидаю соединений на ${port}`));
+        return logger.info(`Listening to connections on ${port}`);
       });
     } catch (error) {
-      console.error(`Произошла ошибка: ${error.message}`);
+      logger.error(`An error occured: ${error.message}`);
       process.exit(1);
     }
 
