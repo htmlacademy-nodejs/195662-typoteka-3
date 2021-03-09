@@ -41,6 +41,9 @@ const generateComments = (count, comments) => (
       .join(` `),
   }))
 );
+
+const generatePicture = (number) => (`image0${number}.jpg`);
+
 const generateArticles = (count, categories, titles, sentences, comments) => {
   return Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
@@ -48,8 +51,9 @@ const generateArticles = (count, categories, titles, sentences, comments) => {
     date: generateDate(),
     announce: shuffle(sentences).slice(0, getRandomInt(1, 5)).join(` `),
     fullText: shuffle(sentences).slice(0, getRandomInt(1, sentences.length - 1)).join(` `),
-    category: shuffle(categories).slice(0, getRandomInt(1, categories.length - 1)),
+    categories: shuffle(categories).slice(0, getRandomInt(1, 4)),
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
+    picture: generatePicture(getRandomInt(1, 3)),
   }));
 };
 
