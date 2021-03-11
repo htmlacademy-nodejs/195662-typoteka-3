@@ -27,8 +27,12 @@ class API {
     return this._load(`/articles/${id}`);
   }
 
-  async getCategories() {
+  getCategories() {
     return this._load(`/categories`);
+  }
+
+  search(query) {
+    return this._load(`/search`, {params: {query}});
   }
 
 }

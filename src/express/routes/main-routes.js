@@ -10,8 +10,16 @@ mainRouter.get(`/`, async (req, res) => {
 });
 mainRouter.get(`/register`, (req, res) => res.render(`sign-in`));
 mainRouter.get(`/login`, (req, res) => res.render(`sign-in`));
-mainRouter.get(`/search`, (req, res) => res.render(`search`));
 mainRouter.get(`/categories`, (req, res) => res.render(`admin/categories`));
+mainRouter.get(`/search`, async (req, res) => {
+  try {
+    const {search} = req.query;
+    const results = await api.search(search);
+    res.render(`search`, {results});
+  } catch (error) {
+    res.render(`search`, {results: []});
+  }
+});
 
 
 module.exports = mainRouter;
