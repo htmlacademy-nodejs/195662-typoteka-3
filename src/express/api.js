@@ -23,6 +23,14 @@ class API {
     return this._load(`/articles`);
   }
 
+  getArticle(id) {
+    return this._load(`/articles/${id}`);
+  }
+
+  async getCategories() {
+    return this._load(`/categories`);
+  }
+
 }
 
 const defaultAPI = new API(defaultUrl, TIMEOUT);
