@@ -269,7 +269,7 @@ describe(`API creates an article if data is valid`, () => {
     title: `Новый альбом Земфиры`,
     date: `2021-02-27`,
     announce: `Обзор новой пластинки знаменитой певицы`,
-    category: [`Музыка`],
+    categories: [`Музыка`],
     fullText: `На альбоме огромное количество классных песен. Красивые стихи. Прекрасная музыка.`
   };
 
@@ -317,7 +317,7 @@ describe(`API changes existent article`, () => {
     title: `Новый альбом Земфиры`,
     date: `2021-02-27`,
     announce: `Обзор новой пластинки знаменитой певицы`,
-    category: [`Музыка`],
+    categories: [`Музыка`],
     fullText: `На альбоме огромное количество классных песен. Красивые стихи. Прекрасная музыка.`
   };
 
@@ -346,7 +346,7 @@ test(`API returns status code 404 when trying to change non-existent article`, (
     title: `Новый альбом Земфиры`,
     date: `2021-02-27`,
     announce: `Обзор новой пластинки знаменитой певицы`,
-    category: [`Музыка`],
+    categories: [`Музыка`],
     fullText: `На альбоме огромное количество классных песен. Красивые стихи. Прекрасная музыка.`
   };
 
