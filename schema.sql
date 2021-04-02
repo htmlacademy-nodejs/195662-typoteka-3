@@ -1,8 +1,10 @@
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS articles;
-DROP TABLE IF EXISTS comments;
-DROP TABLE IF EXISTS categories;
-DROP TABLE IF EXISTS articles_categories;
+CREATE DATABASE typoteka
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    CONNECTION LIMIT = -1;
+
+\c typoteka;
 
 CREATE TABLE users
 (
