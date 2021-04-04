@@ -17,7 +17,7 @@ INSERT INTO categories(title) VALUES
 
 /*Заполнение таблицы articles*/
 ALTER TABLE articles DISABLE TRIGGER ALL;
-INSERT INTO articles(title, photo, announce, text, user_id) VALUES
+INSERT INTO articles(title, picture, announce, text, user_id) VALUES
 ('Как собрать камни бесконечности',
 'image01.jpg',
 'Достичь успеха помогут ежедневные повторения.',
