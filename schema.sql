@@ -21,9 +21,9 @@ CREATE TABLE articles
   id BIGSERIAL PRIMARY KEY NOT NULL,
   user_id BIGINT NOT NULL,
   title VARCHAR(255) NOT NULL,
-  photo VARCHAR(255),
+  picture VARCHAR(255),
   date DATE DEFAULT CURRENT_DATE,
-  announce VARCHAR(255) NOT NULL,
+  announce TEXT NOT NULL,
   text TEXT,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
