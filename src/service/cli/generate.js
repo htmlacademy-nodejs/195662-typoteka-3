@@ -2,8 +2,7 @@
 
 const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
-const fs = require(`fs`).promises;
-const {getRandomInt, shuffle, writeJsonFile} = require(`../../utils`);
+const {getRandomInt, shuffle, writeJsonFile, readContent} = require(`../../utils`);
 const {MAX_ID_LENGTH} = require(`../../constants`);
 
 const DEFAULT_COUNT = 1;
@@ -16,16 +15,6 @@ const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_SENTENCES_PATH = `./data/sentences.txt`;
 const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
-const readContent = async (filePath) => {
-  try {
-    const content = await fs.readFile(filePath, `utf8`);
-    return content.split(`\n`);
-  } catch (err) {
-    console.error(chalk.red(err));
-    return [];
-  }
-
-};
 const generateDate = () => {
   const to = new Date();
   const from = new Date();
