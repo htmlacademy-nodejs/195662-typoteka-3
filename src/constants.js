@@ -24,3 +24,8 @@ module.exports.Env = {
   DEVELOPMENT: `development`,
   PRODUCTION: `production`
 };
+
+module.exports.FileExtension = {
+  TXT: `txt`,
+  JSON: `json`,
+};
