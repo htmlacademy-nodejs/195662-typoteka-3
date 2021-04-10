@@ -1,44 +1,46 @@
 'use strict';
 
 const chalk = require(`chalk`);
-const fs = require(`fs`).promises;
-const {getRandomInt, shuffle} = require(`../../utils`);
+const {getRandomInt, shuffle, writeFile, readContent} = require(`../../utils`);
+const {FileExtension} = require(`../../constants`);
+const GenerateSql = require(`../lib/generate-sql`);
 
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
 const MAX_COMMENTS = 10;
 const FILE_NAME = `fill-db-generated.sql`;
 
+const FILE_USERS_PATH = `./data/users.json`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
 const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_SENTENCES_PATH = `./data/sentences.txt`;
 const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
-const readContent = async (filePath) => {
-  try {
-    const content = await fs.readFile(filePath, `utf8`);
-    return content.split(`\n`);
-  } catch (err) {
-    console.error(chalk.red(err));
-    return [];
-  }
-};
-
-const users = [
-  {
-    email: `ivanov@example.com`,
-    firstName: `Иван`,
-    lastName: `Иванов`,
-    password: `5f4dcc3b5aa765d61d8327deb882cf99`,
-    avatar: `avatar1.jpg`
-  },
-  {
-    email: `petrov@example.com`,
-    firstName: `Пётр`,
-    lastName: `Петров`,
-    password: `5f4dcc3b5aa765d61d8327deb882cf99`,
-    avatar: `avatar2.jpg`
-  }
+const usersFields = [
+  `email`,
+  `firstName`,
+  `lastName`,
+  `password`,
+  `avatar`,
+];
+const categoriesFields = [
+  `title`,
+];
+const articlesFields = [
+  `title`,
+  `picture`,
+  `announce`,
+  `text`,
+  `user_id`,
+];
+const articlesCategoriesFields = [
+  `article_id`,
+  `category_id`,
+];
+const commentsFields = [
+  `article_id`,
+  `user_id`,
+  `text`,
 ];
 
 const generateDate = () => {
@@ -52,9 +54,7 @@ const generateComments = (count, articleId, userCount, comments) => (
   Array(count).fill({}).map(() => ({
     articleId,
     userId: getRandomInt(1, userCount),
-    text: shuffle(comments)
-      .slice(0, getRandomInt(1, 3))
-      .join(` `),
+    text: shuffle(comments).slice(0, getRandomInt(1, 3)).join(` `),
   }))
 );
 const generateCategories = (categoriesCount) => {
@@ -63,14 +63,14 @@ const generateCategories = (categoriesCount) => {
 };
 const generateArticles = (count, usersCount, titles, categoriesCount, sentences, comments) => {
   return Array(count).fill({}).map((_, index) => ({
-    userId: getRandomInt(1, usersCount),
     title: titles[getRandomInt(0, titles.length - 1)],
-    date: generateDate(),
+    picture: generatePicture(getRandomInt(1, 3)),
     announce: shuffle(sentences).slice(0, getRandomInt(1, 5)).join(` `),
-    fullText: shuffle(sentences).slice(0, getRandomInt(1, sentences.length - 1)).join(` `),
+    text: shuffle(sentences).slice(0, getRandomInt(1, sentences.length - 1)).join(` `),
+    userId: getRandomInt(1, usersCount),
+    date: generateDate(),
     categories: generateCategories(categoriesCount),
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), index + 1, usersCount, comments),
-    picture: generatePicture(getRandomInt(1, 3)),
   }));
 };
 
@@ -98,90 +98,46 @@ module.exports = {
       return;
     }
 
+    const users = await readContent(FILE_USERS_PATH, FileExtension.JSON);
     const categories = await readContent(FILE_CATEGORIES_PATH);
     const titles = await readContent(FILE_TITLES_PATH);
     const sentences = await readContent(FILE_SENTENCES_PATH);
     const commentSentences = await readContent(FILE_COMMENTS_PATH);
 
-    const articles = generateArticles(countArticles, users.length, titles, categories.length, sentences, commentSentences);
-    const comments = articles.flatMap((offer) => offer.comments);
-    const articlesCategories = generateArticlesCategories(articles);
+    const articlesSource = generateArticles(countArticles, users.length, titles, categories.length, sentences, commentSentences);
 
-    const usersValues = users.map(
-        ({
-          email,
-          firstName,
-          lastName,
-          password,
-          avatar
-        }) => {
-          return `('${email}', '${firstName}', '${lastName}', '${password}', '${avatar}')`;
-        }).join(`,\n`);
+    const articles = articlesSource.map(({title, picture, announce, text, userId}) => {
+      return {
+        title,
+        picture,
+        announce,
+        text,
+        userId,
+      };
+    });
+    const articlesCategories = generateArticlesCategories(articlesSource);
+    const comments = articlesSource.flatMap((article) => article.comments);
 
+    const generateSql = new GenerateSql();
 
-    const categoriesValues = categories.map((title) => `('${title}')`).join(`,\n`);
+    generateSql.addComment(`Заполнение таблицы users`);
+    generateSql.addInsert(`users`, usersFields, users);
+    generateSql.addComment(`Заполнение таблицы categories`);
+    generateSql.addInsert(`categories`, categoriesFields, categories);
+    generateSql.addComment(`Заполнение таблицы articles`);
+    generateSql.disabledTriggers(`articles`);
+    generateSql.addInsert(`articles`, articlesFields, articles);
+    generateSql.enabledTrigger(`articles`);
+    generateSql.addComment(`Заполнение таблицы articles_categories`);
+    generateSql.disabledTriggers(`articles_categories`);
+    generateSql.addInsert(`articles_categories`, articlesCategoriesFields, articlesCategories);
+    generateSql.enabledTrigger(`articles_categories`);
+    generateSql.addComment(`Заполнение таблицы comments`);
+    generateSql.disabledTriggers(`comments`);
+    generateSql.addInsert(`comments`, commentsFields, comments);
+    generateSql.enabledTrigger(`comments`);
 
-    const articlesValues = articles.map(
-        ({
-          title,
-          picture,
-          announce,
-          fullText,
-          userId
-        }) => {
-          return `('${title}', '${picture}', '${announce}', '${fullText}', ${userId})`;
-        }).join(`,\n`);
-
-    const articlesCategoriesValues = articlesCategories.map(
-        ({
-          articleId,
-          categoryId,
-        }) => {
-          return `(${articleId}, ${categoryId})`;
-        }).join(`,\n`);
-
-    const commentsValues = comments.map(
-        ({
-          articleId,
-          userId,
-          text,
-        }) => {
-          return `('${text}', ${userId}, ${articleId})`;
-        }).join(`,\n`);
-
-    const content = (`
-      /*Заполнение таблицы users*/
-      INSERT INTO users(email, firstname, lastname, password, avatar) VALUES
-      ${usersValues};
-
-      /*Заполнение таблицы categories*/
-      INSERT INTO categories(title) VALUES
-      ${categoriesValues};
-
-      /*Заполнение таблицы articles*/
-      ALTER TABLE articles DISABLE TRIGGER ALL;
-      INSERT INTO articles(title, picture, announce, text, user_id) VALUES
-      ${articlesValues};
-      ALTER TABLE articles ENABLE TRIGGER ALL;
-
-      /*Заполнение таблицы articles_categories*/
-      ALTER TABLE articles_categories DISABLE TRIGGER ALL;
-      INSERT INTO articles_categories(article_id, category_id) VALUES
-      ${articlesCategoriesValues};
-      ALTER TABLE articles_categories ENABLE TRIGGER ALL;
-
-      /*Заполнение таблицы comments*/
-      ALTER TABLE comments DISABLE TRIGGER ALL;
-      INSERT INTO comments(text, user_id, article_id) VALUES
-      ${commentsValues};
-      ALTER TABLE comments ENABLE TRIGGER ALL;`
-    );
-
-    try {
-      await fs.writeFile(FILE_NAME, content);
-      console.info(chalk.green(`Operation success. File created.`));
-    } catch (err) {
-      console.error(chalk.red(`Can't write data to file...`));
-    }
+    const content = generateSql.compile();
+    await writeFile(FILE_NAME, content);
   }
 };
