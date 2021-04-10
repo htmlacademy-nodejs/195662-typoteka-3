@@ -2,6 +2,17 @@
 
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
+const {FileExtension} = require(`./constants`);
+
+const writeFile = async (fileName, content) => {
+  try {
+    await fs.writeFile(fileName, content);
+    console.info(chalk.green(`Operation success. File created.`));
+  } catch (err) {
+    console.error(chalk.red(`Can't write data to file...`));
+    throw err;
+  }
+};
 
 module.exports.getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -17,19 +28,22 @@ module.exports.shuffle = (someArray) => {
   return someArray;
 };
 
-const writeFile = async (fileName, content) => {
-  try {
-    await fs.writeFile(fileName, content);
-    console.info(chalk.green(`Operation success. File created.`));
-  } catch (err) {
-    console.error(chalk.red(`Can't write data to file...`));
-    throw err;
-  }
-};
+module.exports.writeFile = writeFile;
 
 module.exports.writeJsonFile = async (fileName, content) => {
   content = JSON.stringify(content);
   await writeFile(fileName, content);
 };
 
-module.exports.writeFile = writeFile;
+module.exports.readContent = async (filePath, fileExtension) => {
+  try {
+    const content = await fs.readFile(filePath, `utf8`);
+    if (fileExtension === FileExtension.JSON) {
+      return JSON.parse(content);
+    }
+    return content.split(`\n`);
+  } catch (err) {
+    console.error(chalk.red(err));
+    return [];
+  }
+};
