@@ -1,0 +1,16 @@
+[
+  {
+    "email": "ivanov@example.com",
+    "firstName": "Иван",
+    "lastName": "Иванов",
+    "password": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "avatar": "avatar1.jpg"
+  },
+  {
+    "email": "petrov@example.com",
+    "firstName": "Пётр",
+    "lastName": "Петров",
+    "password": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "avatar": "avatar2.jpg"
+  }
+]
