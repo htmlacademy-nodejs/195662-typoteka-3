@@ -41,7 +41,7 @@ module.exports = {
       logger.info(`Trying to connect to database...`);
       await sequelize.authenticate();
     } catch (err) {
-      logger.error(`1An error occured: ${err.message}`);
+      logger.error(`An error occured: ${err.message}`);
       process.exit(1);
     }
 
