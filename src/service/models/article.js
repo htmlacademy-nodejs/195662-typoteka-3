@@ -10,14 +10,14 @@ const define = (sequelize) => Article.init({
     allowNull: false
   },
   picture: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
   },
   announce: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false
   },
   text: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
   }
 }, {
   sequelize,

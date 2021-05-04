@@ -1,8 +1,9 @@
 "use strict";
 
 module.exports = {
-  COMMENTS: `comments`,
+  USERS: `users`,
   ARTICLES: `articles`,
+  COMMENTS: `comments`,
   CATEGORIES: `categories`,
   ARTICLES_CATEGORIES: `articlesCategories`
 };
