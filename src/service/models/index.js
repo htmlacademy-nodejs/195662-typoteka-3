@@ -49,7 +49,7 @@ const define = (sequelize) => {
     through: ArticleCategory,
     foreignKey: `categoryId`,
   });
-  return {User, Article, Comment, Category, ArticleCategory};
+  return {User, Article, Category};
 };
 
 module.exports = define;

@@ -53,18 +53,6 @@ const generateArticles = (count, usersCount, titles, categoriesCount, sentences,
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), index + 1, usersCount, comments),
   }));
 };
-const generateArticlesCategories = (articles) => {
-  const articlesCategories = [];
-  articles.forEach((article, articleIndex) => {
-    article.categories.forEach((categoryId) => {
-      articlesCategories.push({
-        articleId: articleIndex + 1,
-        categoryId,
-      });
-    });
-  });
-  return articlesCategories;
-};
 
 module.exports = {
   name: `--filldb`,
@@ -95,10 +83,8 @@ module.exports = {
       commentsSource,
     ];
     const articles = generateArticles(...generateArticlesParams);
-    const comments = articles.flatMap((article) => article.comments);
-    const articlesCategories = generateArticlesCategories(articles);
 
-    const {User, Article, Comment, Category, ArticleCategory} = defineModels(sequelize);
+    const {User, Article, Category} = defineModels(sequelize);
     await sequelize.sync({force: true});
 
     /* Таблица users */
@@ -113,28 +99,6 @@ module.exports = {
           };
         })
     );
-    /* Таблица articles */
-    await Article.bulkCreate(
-        articles.map((item) => {
-          return {
-            title: item.title,
-            picture: item.picture,
-            announce: item.announce,
-            text: item.text,
-            userId: item.userId,
-          };
-        })
-    );
-    /* Таблица comments */
-    await Comment.bulkCreate(
-        comments.map((item) => {
-          return {
-            articleId: item.articleId,
-            userId: item.userId,
-            text: item.text,
-          };
-        })
-    );
     /* Таблица categories */
     await Category.bulkCreate(
         categories.map((item) => {
@@ -143,14 +107,13 @@ module.exports = {
           };
         })
     );
-    /* Таблица articles_categories */
-    await ArticleCategory.bulkCreate(
-        articlesCategories.map((item) => {
-          return {
-            articleId: item.articleId,
-            categoryId: item.categoryId,
-          };
-        })
-    );
+    /* Таблица articles, comments и articles_categories*/
+    const articlePromises = articles.map(async (article) => {
+      const articleModel = await Article.create(article, {
+        include: [Aliase.COMMENTS]
+      });
+      articleModel.addCategories(article.categories);
+    });
+    await Promise.all(articlePromises);
   }
 };
