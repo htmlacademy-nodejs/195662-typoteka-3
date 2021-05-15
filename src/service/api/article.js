@@ -18,8 +18,6 @@ module.exports = (app, articleService, commentService) => {
   });
 
   route.get(`/:articleId`, articleExists(articleService), async (req, res) => {
-    console.log(123);
-    console.log(req.query);
     const {articleId} = req.params;
     const {comments} = req.query;
 
