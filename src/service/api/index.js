@@ -14,14 +14,19 @@ const {
   CommentService,
 } = require(`../data-service`);
 
+const sequelize = require(`../lib/sequelize`);
+const defineModels = require(`../models`);
+
 const app = new Router();
+
+defineModels(sequelize);
 
 module.exports = app;
 
 (async () => {
   const mockData = await getMockData();
 
-  category(app, new CategoryService(mockData));
-  search(app, new SearchService(mockData));
+  category(app, new CategoryService(sequelize));
+  search(app, new SearchService(sequelize));
   article(app, new ArticleService(mockData), new CommentService());
 })();
