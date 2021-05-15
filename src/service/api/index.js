@@ -5,8 +5,6 @@ const category = require(`./category`);
 const search = require(`./search`);
 const article = require(`./article`);
 
-const getMockData = require(`../lib/get-mock-data`);
-
 const {
   CategoryService,
   SearchService,
@@ -24,9 +22,7 @@ defineModels(sequelize);
 module.exports = app;
 
 (async () => {
-  const mockData = await getMockData();
-
   category(app, new CategoryService(sequelize));
   search(app, new SearchService(sequelize));
-  article(app, new ArticleService(mockData), new CommentService());
+  article(app, new ArticleService(sequelize), new CommentService(sequelize));
 })();

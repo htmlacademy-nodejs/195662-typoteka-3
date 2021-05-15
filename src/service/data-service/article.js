@@ -10,7 +10,7 @@ class ArticleService {
   }
 
   async create(article) {
-    const newArticle = article;
+    const newArticle = await this._Article.create(article);
     await newArticle.addCategories(article.categories);
     return newArticle.get();
   }
