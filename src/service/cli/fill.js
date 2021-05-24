@@ -18,8 +18,8 @@ const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
 const usersFields = [
   `email`,
-  `firstName`,
-  `lastName`,
+  `firstname`,
+  `lastname`,
   `password`,
   `avatar`,
 ];
