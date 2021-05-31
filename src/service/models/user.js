@@ -2,9 +2,14 @@
 
 const {DataTypes, Model} = require(`sequelize`);
 
+const sequelize = require(`../lib/sequelize`);
+const Aliase = require(`./aliase`);
+const Article = require(`./article`);
+const Comment = require(`./comment`);
+
 class User extends Model {}
 
-const define = (sequelize) => User.init({
+User.init({
   email: {
     type: DataTypes.STRING,
     allowNull: false
@@ -30,4 +35,13 @@ const define = (sequelize) => User.init({
   tableName: `users`
 });
 
-module.exports = define;
+User.hasMany(Article, {
+  as: Aliase.ARTICLES,
+  foreignKey: `userId`,
+});
+User.hasMany(Comment, {
+  as: Aliase.COMMENTS,
+  foreignKey: `userId`,
+});
+
+module.exports = User;

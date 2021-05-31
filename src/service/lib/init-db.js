@@ -1,10 +1,13 @@
 "use strict";
 
-const defineModels = require(`../models`);
+// const defineModels = require(`../models`);
 const Aliase = require(`../models/aliase`);
+const User = require(`../models/user`);
+const Article = require(`../models/article`);
+const Category = require(`../models/category`);
 
 module.exports = async (sequelize, {users, categories, articles}) => {
-  const {User, Article, Category} = defineModels(sequelize);
+  // const {User, Article, Category} = defineModels(sequelize);
   await sequelize.sync({force: true});
   /* Таблица users */
   await User.bulkCreate(
