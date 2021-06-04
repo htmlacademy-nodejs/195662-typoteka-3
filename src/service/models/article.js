@@ -2,48 +2,50 @@
 
 const {DataTypes, Model} = require(`sequelize`);
 
-const sequelize = require(`../lib/sequelize`);
+// const sequelize = require(`../lib/sequelize`);
 const Aliase = require(`./aliase`);
-const ArticleCategory = require(`./article-category`);
-const Category = require(`./category`);
-const User = require(`./user`);
-const Comment = require(`./comment`);
 
 class Article extends Model {}
 
-Article.init({
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  picture: {
-    type: DataTypes.TEXT,
-  },
-  announce: {
-    type: DataTypes.TEXT,
-    allowNull: false
-  },
-  text: {
-    type: DataTypes.TEXT,
+module.exports = class ArticleModel {
+  init(sequelize) {
+    Article.init({
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      picture: {
+        type: DataTypes.TEXT,
+      },
+      announce: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
+      text: {
+        type: DataTypes.TEXT,
+      }
+    }, {
+      sequelize,
+      modelName: `Article`,
+      tableName: `articles`
+    });
   }
-}, {
-  sequelize,
-  modelName: `Article`,
-  tableName: `articles`
-});
-
-Article.belongsTo(User, {
-  as: Aliase.USERS,
-  foreignKey: `userId`,
-});
-Article.hasMany(Comment, {
-  as: Aliase.COMMENTS,
-  foreignKey: `articleId`
-});
-Article.belongsToMany(Category, {
-  as: Aliase.CATEGORIES,
-  through: ArticleCategory,
-  foreignKey: `articleId`,
-});
-
-module.exports = Article;
+  defineAssociations(sequelize) {
+    Article.belongsTo(sequelize.models.User, {
+      as: Aliase.USERS,
+      foreignKey: `userId`,
+    });
+    Article.hasMany(sequelize.models.Comment, {
+      as: Aliase.COMMENTS,
+      foreignKey: `articleId`
+    });
+    Article.belongsToMany(sequelize.models.Category, {
+      as: Aliase.CATEGORIES,
+      through: Aliase.ARTICLE_CATEGORIES,
+      foreignKey: `articleId`,
+    });
+  }
+  getModel() {
+    return Article;
+  }
+};

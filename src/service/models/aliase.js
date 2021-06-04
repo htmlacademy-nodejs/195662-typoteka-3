@@ -5,5 +5,5 @@ module.exports = {
   ARTICLES: `articles`,
   COMMENTS: `comments`,
   CATEGORIES: `categories`,
-  ARTICLES_CATEGORIES: `articlesCategories`
+  ARTICLE_CATEGORIES: `articleCategories`
 };
