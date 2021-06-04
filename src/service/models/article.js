@@ -1,17 +1,12 @@
 "use strict";
 
-const {DataTypes, Model} = require(`sequelize`);
+const {DataTypes} = require(`sequelize`);
 const Aliase = require(`./aliase`);
-
-class Article extends Model {}
 
 module.exports = class ArticleModel {
   constructor(sequelize) {
     this._sequelizeInstance = sequelize;
-    this._model = Article;
-  }
-  init() {
-    this._model.init({
+    this._model = sequelize.define(`Article`, {
       title: {
         type: DataTypes.STRING,
         allowNull: false
@@ -25,11 +20,10 @@ module.exports = class ArticleModel {
       },
       text: {
         type: DataTypes.TEXT,
-      }
+      },
     }, {
-      sequelize: this._sequelizeInstance,
-      modelName: `Article`,
-      tableName: `articles`
+      tableName: Aliase.ARTICLES,
+      underscored: true,
     });
   }
   defineAssociations() {

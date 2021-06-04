@@ -1,17 +1,12 @@
 "use strict";
 
-const {DataTypes, Model} = require(`sequelize`);
+const {DataTypes} = require(`sequelize`);
 const Aliase = require(`./aliase`);
-
-class User extends Model {}
 
 module.exports = class UserModel {
   constructor(sequelize) {
     this._sequelizeInstance = sequelize;
-    this._model = User;
-  }
-  init() {
-    this._model.init({
+    this._model = sequelize.define(`User`, {
       email: {
         type: DataTypes.STRING,
         allowNull: false
@@ -32,9 +27,8 @@ module.exports = class UserModel {
         type: DataTypes.STRING,
       },
     }, {
-      sequelize: this._sequelizeInstance,
-      modelName: `User`,
-      tableName: `users`
+      tableName: Aliase.USERS,
+      underscored: true,
     });
   }
   defineAssociations() {

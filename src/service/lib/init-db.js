@@ -2,9 +2,6 @@
 
 const defineModels = require(`../models`);
 const Aliase = require(`../models/aliase`);
-// const User = require(`../models/user`);
-// const Article = require(`../models/article`);
-// const Category = require(`../models/category`);
 
 module.exports = async (sequelize, {users, categories, articles}) => {
   const {User, Article, Category} = defineModels(sequelize);

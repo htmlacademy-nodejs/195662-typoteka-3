@@ -1,26 +1,19 @@
 "use strict";
 
-const {DataTypes, Model} = require(`sequelize`);
+const {DataTypes} = require(`sequelize`);
 const Aliase = require(`./aliase`);
-
-
-class Category extends Model {}
 
 module.exports = class CategoryModel {
   constructor(sequelize) {
     this._sequelizeInstance = sequelize;
-    this._model = Category;
-  }
-  init() {
-    this._model.init({
+    this._model = sequelize.define(`Category`, {
       title: {
         type: DataTypes.STRING,
         allowNull: false
       }
     }, {
-      sequelize: this._sequelizeInstance,
-      modelName: `Category`,
-      tableName: `categories`
+      tableName: Aliase.CATEGORIES,
+      underscored: true,
     });
   }
   defineAssociations() {

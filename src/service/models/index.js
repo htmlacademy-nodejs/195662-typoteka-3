@@ -4,7 +4,7 @@ const CategoryModel = require(`./category`);
 const CommentModel = require(`./comment`);
 const ArticleModel = require(`./article`);
 
-const getModels = (store) => {
+const getDefinedModels = (store) => {
   const res = {};
   Object.keys(store).forEach((key) => {
     res[key] = store[key].getModel();
@@ -19,16 +19,11 @@ const define = (sequelize) => {
     Article: new ArticleModel(sequelize),
     Comment: new CommentModel(sequelize),
   };
-  const models = Object.values(modelStore);
-
-  models.forEach((model) => {
-    model.init();
-  });
-  models.forEach((model) => {
+  Object.values(modelStore).forEach((model) => {
     model.defineAssociations();
   });
 
-  return getModels(modelStore);
+  return getDefinedModels(modelStore);
 };
 
 module.exports = define;
