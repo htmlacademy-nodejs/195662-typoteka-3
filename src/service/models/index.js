@@ -5,10 +5,10 @@ const CommentModel = require(`./comment`);
 const ArticleModel = require(`./article`);
 
 const define = (sequelize) => {
-  const userModel = new UserModel();
-  const categoryModel = new CategoryModel();
-  const commentModel = new CommentModel();
-  const articleModel = new ArticleModel();
+  const userModel = new UserModel(sequelize);
+  const categoryModel = new CategoryModel(sequelize);
+  const commentModel = new CommentModel(sequelize);
+  const articleModel = new ArticleModel(sequelize);
   const models = [
     userModel,
     categoryModel,
@@ -16,10 +16,10 @@ const define = (sequelize) => {
     articleModel,
   ];
   models.forEach((model) => {
-    model.init(sequelize);
+    model.init();
   });
   models.forEach((model) => {
-    model.defineAssociations(sequelize);
+    model.defineAssociations();
   });
 
   const User = userModel.getModel();

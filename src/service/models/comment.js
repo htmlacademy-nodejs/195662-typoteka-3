@@ -1,36 +1,38 @@
 "use strict";
 
 const {DataTypes, Model} = require(`sequelize`);
-
-// const sequelize = require(`../lib/sequelize`);
 const Aliase = require(`./aliase`);
 
 class Comment extends Model {}
 
 module.exports = class CommentModel {
-  init(sequelize) {
-    Comment.init({
+  constructor(sequelize) {
+    this._sequelizeInstance = sequelize;
+    this._model = Comment;
+  }
+  init() {
+    this._model.init({
       text: {
         type: DataTypes.STRING,
         allowNull: false
       }
     }, {
-      sequelize,
+      sequelize: this._sequelizeInstance,
       modelName: `Comment`,
       tableName: `comments`
     });
   }
-  defineAssociations(sequelize) {
-    Comment.belongsTo(sequelize.models.User, {
+  defineAssociations() {
+    this._model.belongsTo(this._sequelizeInstance.models.User, {
       as: Aliase.USERS,
       foreignKey: `userId`,
     });
-    Comment.belongsTo(sequelize.models.Article, {
+    this._model.belongsTo(this._sequelizeInstance.models.Article, {
       as: Aliase.ARTICLES,
       foreignKey: `articleId`,
     });
   }
   getModel() {
-    return Comment;
+    return this._model;
   }
 };
