@@ -33,7 +33,7 @@ class ArticleService {
   }
 
 
-  findOne(id, needComments) {
+  async findOne(id, needComments) {
     const include = [Aliase.CATEGORIES];
     if (needComments) {
       include.push(Aliase.COMMENTS);

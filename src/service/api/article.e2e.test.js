@@ -214,8 +214,6 @@ describe(`API changes existent article`, () => {
 
 });
 
-//todo
-
 describe(`API NOT changes non-existent article`, () => {
   let app;
   let response;
@@ -235,47 +233,52 @@ describe(`API NOT changes non-existent article`, () => {
   test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));
 });
 
-
-test(`API returns status code 400 when trying to change an article with invalid data`, () => {
-
-  const app = createAPI();
+describe(`API NOT change an article with invalid data`, () => {
+  let app;
+  let response;
 
   const invalidArticle = {
     title: `Новый альбом Земфиры`,
-    date: `2021-02-27`,
-    category: [`Музыка`],
-    fullText: `На альбоме огромное количество классных песен. Красивые стихи. Прекрасная музыка.`
+    category: [1],
+    text: `На альбоме огромное количество классных песен. Красивые стихи. Прекрасная музыка.`
   };
 
-  return request(app).put(`/articles/NOEXST`).send(invalidArticle).expect(HttpCode.BAD_REQUEST);
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app).put(`/articles/NULL`).send(invalidArticle);
+  });
+
+  test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
 });
 
 describe(`API correctly deletes an article`, () => {
-
-  const app = createAPI();
-
+  let app;
   let response;
 
   beforeAll(async () => {
-    response = await request(app).delete(`/articles/RREmN0`);
+    app = await createAPI();
+    response = await request(app).delete(`/articles/1`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns deleted article`, () => expect(response.body.id).toBe(`RREmN0`));
-
-  test(`Article count is 4 now`, () => request(app).get(`/articles`).expect((res) => expect(res.body.length).toBe(4))
+  test(`Article count is 5 now`, () => request(app).get(`/articles`).expect((res) => expect(res.body.length).toBe(5))
   );
 
 });
 
-test(`API refuses to delete non-existent article`, () => {
+describe(`API NOT delete non-existent article`, () => {
+  let app;
+  let response;
 
-  const app = createAPI();
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app).delete(`/articles/NULL`);
+  });
 
-  return request(app).delete(`/articles/NOEXST`).expect(HttpCode.NOT_FOUND);
-
+  test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));
 });
+
 
 // comments
 
