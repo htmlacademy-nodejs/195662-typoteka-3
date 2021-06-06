@@ -9,7 +9,6 @@ class SearchService {
   }
 
   async findAll(searchText) {
-    console.log(searchText);
     const articles = await this._Article.findAll({
       where: {
         title: {
