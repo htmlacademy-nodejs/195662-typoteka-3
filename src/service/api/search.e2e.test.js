@@ -98,17 +98,22 @@ describe(`API returns offer based on search query`, () => {
 
 });
 
-test(`API returns code 404 if nothing is found`,
-    () => request(app)
-    .get(`/search`)
-    .query({
-      query: `Учим JEST`
-    })
-    .expect(HttpCode.NOT_FOUND)
-);
+describe(`API returns code 404 if nothing is found`, () => {
+  let response;
 
-test(`API returns 400 when query string is absent`,
-    () => request(app)
-    .get(`/search`)
-    .expect(HttpCode.BAD_REQUEST)
-);
+  beforeAll(async () => {
+    response = await request(app).get(`/search`).query({query: `Учим JEST`});
+  });
+
+  test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));
+});
+
+describe(`API returns 400 when query string is absent`, () => {
+  let response;
+
+  beforeAll(async () => {
+    response = await request(app).get(`/search`);
+  });
+
+  test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+});

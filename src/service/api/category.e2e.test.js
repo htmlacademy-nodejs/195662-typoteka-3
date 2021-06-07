@@ -56,7 +56,6 @@ beforeAll(async () => {
   category(app, new DataService(mockDB));
 });
 
-
 describe(`API return category list`, () => {
   let response;
 

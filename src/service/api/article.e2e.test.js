@@ -54,7 +54,16 @@ const mockArticles = [
     "text": `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много. Это один из лучших рок-музыкантов. Как начать действовать? Для начала просто соберитесь. Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры. Вы можете достичь всего. Стоит только немного постараться и запастись книгами. Золотое сечение — соотношение двух величин, гармоническая пропорция. Достичь успеха помогут ежедневные повторения. Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем. Программировать не настолько сложно, как об этом говорят. Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами. Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Ёлки — это не просто красивое дерево. Это прочная древесина. Первая большая ёлка была установлена только в 1938 году.`,
     "user_id": 2,
     "categories": [2, 3, 4],
-    "comments": [],
+    "comments": [
+      {
+        "user_id": 1,
+        "text": `Это где ж такие красоты?`
+      },
+      {
+        "user_id": 2,
+        "text": `Совсем немного...`
+      },
+    ],
   },
   {
     "title": `Борьба с прокрастинацией`,
@@ -283,105 +292,111 @@ describe(`API NOT delete non-existent article`, () => {
 // comments
 
 describe(`API returns a list of comments to given article`, () => {
-
-  const app = createAPI();
-
+  let app;
   let response;
 
   beforeAll(async () => {
-    response = await request(app).get(`/articles/FruOPx/comments`);
+    app = await createAPI();
+    response = await request(app).get(`/articles/2/comments`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns list of 4 comments`, () => expect(response.body.length).toBe(4));
+  test(`Returns list of 2 comments`, () => expect(response.body.length).toBe(2));
 
-  test(`First comment's id is "DXfWS1"`, () => expect(response.body[0].id).toBe(`DXfWS1`));
+  test(`First comment's text is "Это где ж такие красоты?"`, () => expect(response.body[0].text).toBe(`Это где ж такие красоты?`));
 
 });
 
 describe(`API creates a comment if data is valid`, () => {
+  let app;
+  let response;
 
   const newComment = {
     text: `Валидному комментарию достаточно этого поля`
   };
 
-  const app = createAPI();
-
-  let response;
-
   beforeAll(async () => {
-    response = await request(app).post(`/articles/FruOPx/comments`).send(newComment);
+    app = await createAPI();
+    response = await request(app).post(`/articles/2/comments`).send(newComment);
   });
-
 
   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
 
   test(`Returns comment created`, () => expect(response.body).toEqual(expect.objectContaining(newComment)));
 
-  test(`Comments count is changed`, () => request(app).get(`/articles/FruOPx/comments`).expect((res) => expect(res.body.length).toBe(5))
+  test(`Comments count is changed`, () => request(app).get(`/articles/2/comments`).expect((res) => expect(res.body.length).toBe(3))
   );
 
 });
 
-test(`API refuses to create a comment to non-existent article and returns status code 404`, () => {
+describe(`API refuses to create a comment to non-existent article`, () => {
+  let app;
+  let response;
 
-  const app = createAPI();
+  const newComment = {
+    text: `Валидному комментарию достаточно этого поля`
+  };
 
-  return request(app)
-    .post(`/articles/NOEXST/comments`)
-    .send({
-      text: `Неважно`
-    })
-    .expect(HttpCode.NOT_FOUND);
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app).post(`/articles/NULL/comments`).send(newComment);
+  });
 
+  test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));
 });
 
-test(`API refuses to create a comment when data is invalid, and returns status code 400`, () => {
-
-  const app = createAPI();
-
-  return request(app)
-    .post(`/articles/FruOPx/comments`)
-    .send({})
-    .expect(HttpCode.BAD_REQUEST);
-
-});
-
-describe(`API correctly deletes a comment`, () => {
-
-  const app = createAPI();
-
+describe(`API refuses to create a comment when data is invalid`, () => {
+  let app;
   let response;
 
   beforeAll(async () => {
-    response = await request(app)
-      .delete(`/articles/FruOPx/comments/DXfWS1`);
+    app = await createAPI();
+    response = await request(app).post(`/articles/1/comments`).send({});
+  });
+
+  test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+});
+
+describe(`API correctly deletes a comment`, () => {
+  let app;
+  let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app).delete(`/articles/2/comments/1`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns comment deleted`, () => expect(response.body.id).toBe(`DXfWS1`));
-
-  test(`Comments count is 3 now`, () => request(app)
-    .get(`/articles/FruOPx/comments`)
-    .expect((res) => expect(res.body.length).toBe(3))
+  test(`Comments count is 1 now`, () => request(app)
+    .get(`/articles/2/comments`)
+    .expect((res) => expect(res.body.length).toBe(1))
   );
 
 });
 
-test(`API refuses to delete non-existent comment`, () => {
+describe(`API refuses to delete non-existent comment`, () => {
+  let app;
+  let response;
 
-  const app = createAPI();
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app).delete(`/articles/2/comments/11`);
+  });
 
-  return request(app).delete(`/articles/FruOPx/comments/NOEXST`).expect(HttpCode.NOT_FOUND);
-
+  test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));
 });
 
-test(`API refuses to delete a comment to non-existent article`, () => {
+describe(`API refuses to delete a comment to non-existent article`, () => {
+  let app;
+  let response;
 
-  const app = createAPI();
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app).delete(`/articles/NULL/comments/11`);
+  });
 
-  return request(app).delete(`/offers/NOEXST/comments/DXfWS1`).expect(HttpCode.NOT_FOUND);
-
+  test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));
 });
+
