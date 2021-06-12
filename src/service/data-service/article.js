@@ -9,15 +9,22 @@ class ArticleService {
     this._Comment = sequelize.models.Comment;
     this._Category = sequelize.models.Category;
 
-    this._includedCategories = {
-      model: this._Category,
-      as: Aliase.CATEGORIES,
-      through: {attributes: []},
-      attributes: [
-        `id`,
-        `title`,
-      ]
-    };
+    this._include = [
+      {
+        model: this._Category,
+        as: Aliase.CATEGORIES,
+        through: {attributes: []},
+        attributes: [
+          `id`,
+          `title`,
+        ]
+      },
+      {
+        model: this._Comment,
+        as: Aliase.COMMENTS,
+        // attributes: []
+      }
+    ];
   }
 
   async create(article) {
@@ -45,17 +52,9 @@ class ArticleService {
     //     ]
     //   ]
     // };
-    const include = [
-      this._includedCategories,
-      {
-        model: this._Comment,
-        as: Aliase.COMMENTS,
-        // attributes: []
-      }
-    ];
     const articles = await this._Article.findAll({
       // attributes,
-      include,
+      include: this._include,
     });
     return articles.map((item) => item.get());
   }
@@ -64,10 +63,10 @@ class ArticleService {
     const {count, rows} = await this._Article.findAndCountAll({
       limit,
       offset,
-      include: [Aliase.CATEGORIES],
+      include: this._include,
       distinct: true
     });
-    return {count, offers: rows};
+    return {count, articles: rows};
   }
 
 
