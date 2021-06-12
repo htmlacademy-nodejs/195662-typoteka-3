@@ -4,9 +4,20 @@ const Aliase = require(`../models/aliase`);
 
 class ArticleService {
   constructor(sequelize) {
+    // this._Sequelize = sequelize;
     this._Article = sequelize.models.Article;
     this._Comment = sequelize.models.Comment;
     this._Category = sequelize.models.Category;
+
+    this._includedCategories = {
+      model: this._Category,
+      as: Aliase.CATEGORIES,
+      through: {attributes: []},
+      attributes: [
+        `id`,
+        `title`,
+      ]
+    };
   }
 
   async create(article) {
@@ -23,13 +34,40 @@ class ArticleService {
     return !!deletedRows;
   }
 
-  async findAll(needComments) {
-    const include = [Aliase.CATEGORIES];
-    if (needComments) {
-      include.push(Aliase.COMMENTS);
-    }
-    const articles = await this._Article.findAll({include});
+  async findAll() {
+    // todo посчитать количество комментариев у статьи
+    // const attributes = {
+    //
+    //   include: [
+    //     [
+    //       this._Sequelize.fn(`COUNT`, this._Sequelize.col(`comments.id`)),
+    //       `commentsCount`,
+    //     ]
+    //   ]
+    // };
+    const include = [
+      this._includedCategories,
+      {
+        model: this._Comment,
+        as: Aliase.COMMENTS,
+        // attributes: []
+      }
+    ];
+    const articles = await this._Article.findAll({
+      // attributes,
+      include,
+    });
     return articles.map((item) => item.get());
+  }
+
+  async findPage({limit, offset}) {
+    const {count, rows} = await this._Article.findAndCountAll({
+      limit,
+      offset,
+      include: [Aliase.CATEGORIES],
+      distinct: true
+    });
+    return {count, offers: rows};
   }
 
 
