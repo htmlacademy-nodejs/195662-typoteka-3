@@ -1,0 +1,44 @@
+mixin pagination(page, totalPages, width)
+  -
+    let start = 1;
+    let end = width;
+
+    if (totalPages < width) {
+      end = totalPages;
+    }
+
+    if (page > width - 2) {
+      start = page - 2;
+      end = page + 2;
+    }
+
+    if (end > totalPages) {
+      start = totalPages - width + 1;
+      end = totalPages;
+    }
+
+    if (start < 1) {
+      start = 1;
+    }
+
+    let i = start - 1;
+  ul.preview__pagination.pagination
+    li
+      a.pagination__button.button.button--backwards(
+        class={"button--disabled" : page === 1}
+        href=`?page=${page - 1}`
+        aria-label='Страница назад'
+      )
+    while i++ < end
+      li.pagination__item(
+      class={"pagination__item--active" : i === page}
+      )
+        a(
+          href=`?page=${i}`
+        ) #{i}
+    li
+      a.pagination__button.button.button--forward(
+        class={"button--disabled" : page === totalPages}
+        href=`?page=${page + 1}`
+        aria-label='Страница вперед'
+      )
