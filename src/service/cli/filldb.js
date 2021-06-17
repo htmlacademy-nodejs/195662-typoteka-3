@@ -1,9 +1,7 @@
 'use strict';
 
 const sequelize = require(`../lib/sequelize`);
-const defineModels = require(`../models`);
 const initDatabase = require(`../lib/init-db`);
-const Aliase = require(`../models/aliase`);
 const {getLogger} = require(`../lib/logger`);
 const {readContent, getRandomInt, shuffle} = require(`../../utils`);
 const {FileExtension} = require(`../../constants`);

@@ -10,6 +10,10 @@ GET http://localhost:3000/api/search?query=достигнуть HTTP/1.1
 
 # Список постов
 GET http://localhost:3000/api/articles HTTP/1.1
+###
+
+#Список постов с параметрами
+GET http://localhost:3000/api/articles?limit=8&offset=0
 
 ###
 
