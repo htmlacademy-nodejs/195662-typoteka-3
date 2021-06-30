@@ -14,6 +14,7 @@ mainRouter.get(`/`, async (req, res) => {
   const offset = (page - 1) * ARTICLES_PER_PAGE;
   const {count, articles} = await api.getArticles({limit, offset});
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
+  console.log(articles);
   return res.render(`main`, {articles, page, totalPages});
 });
 mainRouter.get(`/register`, (req, res) => res.render(`sign-in`));

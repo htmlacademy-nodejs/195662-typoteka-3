@@ -4,7 +4,7 @@ const Aliase = require(`../models/aliase`);
 
 class ArticleService {
   constructor(sequelize) {
-    // this._Sequelize = sequelize;
+    this._Sequelize = sequelize;
     this._Article = sequelize.models.Article;
     this._Comment = sequelize.models.Comment;
     this._Category = sequelize.models.Category;
@@ -19,11 +19,13 @@ class ArticleService {
           `title`,
         ]
       },
-      {
-        model: this._Comment,
-        as: Aliase.COMMENTS,
-        // attributes: []
-      }
+    ];
+    this._attributes = [
+      `id`,
+      `title`,
+      `picture`,
+      `announce`,
+      [this._Sequelize.literal(`CAST((SELECT COUNT(*) FROM comments WHERE comments.article_id = "Article"."id") AS INT)`), `commentCount`],
     ];
   }
 
@@ -42,18 +44,8 @@ class ArticleService {
   }
 
   async findAll() {
-    // todo посчитать количество комментариев у статьи
-    // const attributes = {
-    //
-    //   include: [
-    //     [
-    //       this._Sequelize.fn(`COUNT`, this._Sequelize.col(`comments.id`)),
-    //       `commentsCount`,
-    //     ]
-    //   ]
-    // };
     const articles = await this._Article.findAll({
-      // attributes,
+      attributes: this._attributes,
       include: this._include,
     });
     return articles.map((item) => item.get());
@@ -63,8 +55,9 @@ class ArticleService {
     const {count, rows} = await this._Article.findAndCountAll({
       limit,
       offset,
+      attributes: this._attributes,
       include: this._include,
-      distinct: true
+      distinct: true,
     });
     return {count, articles: rows};
   }
