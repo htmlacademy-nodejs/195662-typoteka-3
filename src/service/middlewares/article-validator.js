@@ -4,6 +4,7 @@ const {HttpCode} = require(`../../constants`);
 
 const requiredFields = [
   `title`,
+  `date`,
   `categories`,
   `announce`,
 ];

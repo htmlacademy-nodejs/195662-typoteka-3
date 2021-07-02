@@ -1,6 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
+const {DateTime} = require(`luxon`);
 
 const multer = require(`multer`);
 const path = require(`path`);
@@ -30,10 +31,11 @@ articlesRouter.post(`/add`,
       const articleData = {
         title: body.title,
         categories: body.categories,
-        date: body.date,
+        date: DateTime.fromFormat(body.date, `dd.MM.yyyy`).toFormat(`yyyy-MM-dd`),
         announce: body.announce,
       };
       try {
+        console.log(articleData);
         await api.createArticle(articleData);
         res.redirect(`/my`);
       } catch (e) {
@@ -43,8 +45,7 @@ articlesRouter.post(`/add`,
 );
 articlesRouter.get(`/add`, async (req, res) => {
   const categories = await api.getCategories();
-  const now = new Date();
-  const date = now.toLocaleDateString(`ru-RU`);
+  const date = DateTime.now().toFormat(`dd.MM.yyyy`);
   res.render(`articles/post-add`, {date, categories});
 });
 articlesRouter.get(`/:id`, (req, res) => res.render(`articles/post`));
