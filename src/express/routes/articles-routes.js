@@ -35,7 +35,6 @@ articlesRouter.post(`/add`,
         announce: body.announce,
       };
       try {
-        console.log(articleData);
         await api.createArticle(articleData);
         res.redirect(`/my`);
       } catch (e) {

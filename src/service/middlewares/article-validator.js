@@ -1,5 +1,6 @@
 'use strict';
 
+const Joi = require(`joi`);
 const {HttpCode} = require(`../../constants`);
 
 const requiredFields = [
