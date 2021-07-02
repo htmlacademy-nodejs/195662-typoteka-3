@@ -32,7 +32,7 @@ block content
                       | Обзор
                 each category, index in categories
                   .new-publication__checkbox.new-publication__checkbox--auto
-                    input(type='checkbox' name=`categories` id=`checkbox-${index}`)
+                    input(type='checkbox' name=`categories` id=`checkbox-${index}` value=`${category.id}`)
                     label(for=`checkbox-${index}`) #{category.title}
                 a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
               .form__wrapper.form__wrapper--text
