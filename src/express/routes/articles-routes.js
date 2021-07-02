@@ -27,7 +27,6 @@ articlesRouter.post(`/add`,
     upload.single(`photo`),
     async (req, res) => {
       const {body} = req;
-      console.log(req.body);
       const articleData = {
         title: body.title,
         categories: body.categories,
