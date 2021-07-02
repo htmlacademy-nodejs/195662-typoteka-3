@@ -43,7 +43,9 @@ articlesRouter.post(`/add`,
 );
 articlesRouter.get(`/add`, async (req, res) => {
   const categories = await api.getCategories();
-  res.render(`articles/post-add`, {categories});
+  const now = new Date();
+  const date = now.toLocaleDateString(`ru-RU`);
+  res.render(`articles/post-add`, {date, categories});
 });
 articlesRouter.get(`/:id`, (req, res) => res.render(`articles/post`));
 articlesRouter.get(`/edit/:id`, async (req, res) => {
