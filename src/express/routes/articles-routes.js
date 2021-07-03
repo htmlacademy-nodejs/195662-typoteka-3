@@ -6,6 +6,7 @@ const {DateTime} = require(`luxon`);
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
+const bodyParser = require(`body-parser`);
 const UPLOAD_DIR = `../upload/img/`;
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
 
@@ -21,6 +22,10 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({storage});
+
+const urlencodedParser = bodyParser.urlencoded({
+  extended: false,
+});
 
 articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles/publications-by-category`));
 
@@ -52,9 +57,10 @@ articlesRouter.post(
 );
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
+  const {error} = req.query;
   const article = await api.getArticle(id, true);
   article.date = DateTime.fromISO(article.date).toFormat(`dd.MM.yyyy`);
-  res.render(`articles/post`, {article});
+  res.render(`articles/post`, {id, article, error});
 });
 articlesRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
@@ -84,6 +90,20 @@ articlesRouter.post(
         res.redirect(`/my`);
       } catch (error) {
         res.redirect(`/articles/edit/${id}?error=${encodeURIComponent(error.response.data)}`);
+      }
+    }
+);
+articlesRouter.post(
+    `/:id/comments`,
+    urlencodedParser,
+    async (req, res) => {
+      const {id} = req.params;
+      const {comment} = req.body;
+      try {
+        await api.createComment(id, {text: comment});
+        res.redirect(`/articles/${id}`);
+      } catch (error) {
+        res.redirect(`/articles/${id}?error=${encodeURIComponent(error.response.data)}`);
       }
     }
 );

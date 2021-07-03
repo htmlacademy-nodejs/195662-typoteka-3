@@ -1,16 +1,18 @@
 'use strict';
 
+const Joi = require(`joi`);
 const {HttpCode} = require(`../../constants`);
 
-const requiredFields = [`text`];
+const schema = Joi.object({
+  text: Joi.string().required(),
+});
 
 module.exports = (req, res, next) => {
   const newComment = req.body;
-  const fields = Object.keys(newComment);
-  const fieldsExists = requiredFields.every((field) => fields.includes(field));
+  const {error} = schema.validate(newComment, {abortEarly: false});
 
-  if (!fieldsExists) {
-    return res.status(HttpCode.BAD_REQUEST).send(`Bad request`);
+  if (error) {
+    return res.status(HttpCode.BAD_REQUEST).send(error.details.map((err) => err.message).join(`\n`));
   }
 
   return next();
