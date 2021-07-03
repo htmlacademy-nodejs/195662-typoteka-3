@@ -23,8 +23,12 @@ class API {
     return this._load(`/articles`, {params});
   }
 
-  getArticle(id) {
-    return this._load(`/articles/${id}`);
+  getArticle(id, needComments) {
+    let url = `/articles/${id}`;
+    if (needComments) {
+      url = `${url}?comments=true`;
+    }
+    return this._load(url);
   }
 
   createArticle(data) {

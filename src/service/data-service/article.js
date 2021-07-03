@@ -64,7 +64,7 @@ class ArticleService {
 
 
   async findOne(id, needComments) {
-    const include = [Aliase.CATEGORIES];
+    const include = [...this._include];
     if (needComments) {
       include.push(Aliase.COMMENTS);
     }
