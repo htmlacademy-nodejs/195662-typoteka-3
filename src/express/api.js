@@ -34,6 +34,13 @@ class API {
     });
   }
 
+  updateArticle(id, data) {
+    return this._load(`/articles/${id}`, {
+      method: `PUT`,
+      data
+    });
+  }
+
   getCategories() {
     return this._load(`/categories`);
   }

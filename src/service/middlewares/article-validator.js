@@ -8,6 +8,7 @@ const schema = Joi.object({
   date: Joi.date().required(),
   categories: Joi.array().items(Joi.number().integer().positive()).min(1).required(),
   announce: Joi.string().min(30).max(250).required(),
+  text: Joi.string().allow(``),
 });
 
 module.exports = (req, res, next) => {

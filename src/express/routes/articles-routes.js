@@ -24,7 +24,14 @@ const upload = multer({storage});
 
 articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles/publications-by-category`));
 
-articlesRouter.post(`/add`,
+articlesRouter.get(`/add`, async (req, res) => {
+  const {error} = req.query;
+  const categories = await api.getCategories();
+  const date = DateTime.now().toFormat(`dd.MM.yyyy`);
+  res.render(`articles/post-add`, {date, categories, error});
+});
+articlesRouter.post(
+    `/add`,
     upload.single(`photo`),
     async (req, res) => {
       const {body} = req;
@@ -33,6 +40,7 @@ articlesRouter.post(`/add`,
         categories: body.categories,
         date: DateTime.fromFormat(body.date, `dd.MM.yyyy`).toFormat(`yyyy-MM-dd`),
         announce: body.announce,
+        text: body.text,
       };
       try {
         await api.createArticle(articleData);
@@ -42,21 +50,37 @@ articlesRouter.post(`/add`,
       }
     }
 );
-articlesRouter.get(`/add`, async (req, res) => {
-  const {error} = req.query;
-  const categories = await api.getCategories();
-  const date = DateTime.now().toFormat(`dd.MM.yyyy`);
-  res.render(`articles/post-add`, {date, categories, error});
-});
 articlesRouter.get(`/:id`, (req, res) => res.render(`articles/post`));
 articlesRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
+  const {error} = req.query;
   const [article, categories] = await Promise.all([
     api.getArticle(id),
     api.getCategories()
   ]);
-  res.render(`articles/post-edit`, {article, categories});
+  article.date = DateTime.fromISO(article.date).toFormat(`dd.MM.yyyy`);
+  res.render(`articles/post-edit`, {id, article, categories, error});
 });
-
+articlesRouter.post(
+    `/edit/:id`,
+    upload.single(`photo`),
+    async (req, res) => {
+      const {body} = req;
+      const {id} = req.params;
+      const articleData = {
+        title: body.title,
+        categories: body.categories,
+        date: DateTime.fromFormat(body.date, `dd.MM.yyyy`).toFormat(`yyyy-MM-dd`),
+        announce: body.announce,
+        text: body.text,
+      };
+      try {
+        await api.updateArticle(id, articleData);
+        res.redirect(`/my`);
+      } catch (error) {
+        res.redirect(`/articles/edit/${id}?error=${encodeURIComponent(error.response.data)}`);
+      }
+    }
+);
 
 module.exports = articlesRouter;
