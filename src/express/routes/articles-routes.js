@@ -37,15 +37,16 @@ articlesRouter.post(`/add`,
       try {
         await api.createArticle(articleData);
         res.redirect(`/my`);
-      } catch (e) {
-        res.redirect(`back`);
+      } catch (error) {
+        res.redirect(`/articles/add?error=${encodeURIComponent(error.response.data)}`);
       }
     }
 );
 articlesRouter.get(`/add`, async (req, res) => {
+  const {error} = req.query;
   const categories = await api.getCategories();
   const date = DateTime.now().toFormat(`dd.MM.yyyy`);
-  res.render(`articles/post-add`, {date, categories});
+  res.render(`articles/post-add`, {date, categories, error});
 });
 articlesRouter.get(`/:id`, (req, res) => res.render(`articles/post`));
 articlesRouter.get(`/edit/:id`, async (req, res) => {

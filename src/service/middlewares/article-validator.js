@@ -14,8 +14,6 @@ module.exports = (req, res, next) => {
   const newArticle = req.body;
   const {error} = schema.validate(newArticle, {abortEarly: false});
   if (error) {
-    console.log(error);
-    // todo а разве я недолжен увтдеть эту ошибку в консоли браузера?
     return res.status(HttpCode.BAD_REQUEST).send(error.details.map((err) => err.message).join(`\n`));
   }
 
