@@ -188,9 +188,10 @@ describe(`API refuses to create an article if data is invalid`, () => {
   let app;
 
   const newArticle = {
-    title: `Новый альбом Земфиры`,
+    title: `Скоро выйдет новый альбом Земфиры`,
     announce: `Обзор новой пластинки знаменитой певицы`,
-    category: [1],
+    categories: [1],
+    date: `2020-10-11`,
   };
 
   beforeAll(async () => {
@@ -205,6 +206,29 @@ describe(`API refuses to create an article if data is invalid`, () => {
     }
   });
 
+  test(`When field type is wrong response code is 400`, async () => {
+    const badOffers = [
+      {...newArticle, title: 123},
+      {...newArticle, announce: [`a`, `b`]},
+      {...newArticle, categories: `Категория`},
+      // todo к вопросу про адаптер для даты
+      // {...newArticle, date: 123},
+    ];
+    for (const badOffer of badOffers) {
+      await request(app).post(`/articles`).send(badOffer).expect(HttpCode.BAD_REQUEST);
+    }
+  });
+
+  test(`When field value is wrong response code is 400`, async () => {
+    const badOffers = [
+      {...newArticle, title: `too short`},
+      {...newArticle, announce: ``},
+      {...newArticle, categories: []}
+    ];
+    for (const badOffer of badOffers) {
+      await request(app).post(`/articles`).send(badOffer).expect(HttpCode.BAD_REQUEST);
+    }
+  });
 });
 
 describe(`API changes existent article`, () => {
