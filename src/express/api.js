@@ -23,12 +23,26 @@ class API {
     return this._load(`/articles`, {params});
   }
 
-  getArticle(id) {
-    return this._load(`/articles/${id}`);
+  getArticle(id, comments) {
+    return this._load(`/articles/${id}`, {params: {comments}});
   }
 
   createArticle(data) {
     return this._load(`/articles`, {
+      method: `POST`,
+      data
+    });
+  }
+
+  updateArticle(id, data) {
+    return this._load(`/articles/${id}`, {
+      method: `PUT`,
+      data
+    });
+  }
+
+  createComment(id, data) {
+    return this._load(`/articles/${id}/comments`, {
       method: `POST`,
       data
     });

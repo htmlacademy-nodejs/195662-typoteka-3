@@ -4,13 +4,13 @@ const Joi = require(`joi`);
 const {HttpCode} = require(`../../constants`);
 
 const schema = Joi.object({
-  text: Joi.string().required(),
+  articleId: Joi.number().integer().min(1),
+  commentId: Joi.number().integer().min(1),
 });
 
 module.exports = (req, res, next) => {
-  const newComment = req.body;
-  const {error} = schema.validate(newComment, {abortEarly: false});
-
+  const params = req.params;
+  const {error} = schema.validate(params);
   if (error) {
     return res.status(HttpCode.BAD_REQUEST).send(error.details.map((err) => err.message).join(`\n`));
   }

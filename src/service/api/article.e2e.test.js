@@ -46,6 +46,7 @@ const mockArticles = [
     "user_id": 1,
     "categories": [1, 9],
     "comments": [],
+    "date": `2020-10-11`,
   },
   {
     "title": `Рок — это протест`,
@@ -64,6 +65,7 @@ const mockArticles = [
         "text": `Совсем немного...`
       },
     ],
+    "date": `2020-10-11`,
   },
   {
     "title": `Борьба с прокрастинацией`,
@@ -73,6 +75,7 @@ const mockArticles = [
     "user_id": 2,
     "categories": [3, 8],
     "comments": [],
+    "date": `2020-10-11`,
   },
   {
     "title": `Как собрать камни бесконечности`,
@@ -82,6 +85,7 @@ const mockArticles = [
     "user_id": 1,
     "categories": [4, 7, 9],
     "comments": [],
+    "date": `2020-10-11`,
   },
   {
     "title": `Что такое золотое сечение`,
@@ -91,6 +95,7 @@ const mockArticles = [
     "user_id": 2,
     "categories": [1, 5, 6],
     "comments": [],
+    "date": `2020-10-11`,
   },
   {
     "title": `Учим HTML и CSS`,
@@ -100,6 +105,7 @@ const mockArticles = [
     "user_id": 1,
     "categories": [2, 4, 8],
     "comments": [],
+    "date": `2020-10-11`,
   },
 ];
 
@@ -157,10 +163,11 @@ describe(`API creates an article if data is valid`, () => {
   let response;
 
   const newArticle = {
-    title: `Новый альбом Земфиры`,
+    title: `Скоро выйдет новый альбом Земфиры`,
     announce: `Обзор новой пластинки знаменитой певицы`,
     categories: [1],
-    text: `На альбоме огромное количество классных песен. Красивые стихи. Прекрасная музыка.`
+    text: `На альбоме огромное количество классных песен. Красивые стихи. Прекрасная музыка.`,
+    date: `2020-10-11`,
   };
 
   beforeAll(async () => {
@@ -170,7 +177,7 @@ describe(`API creates an article if data is valid`, () => {
 
   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
 
-  test(`Returns article created`, () => expect(response.body.title).toBe(`Новый альбом Земфиры`));
+  test(`Returns article created`, () => expect(response.body.title).toBe(`Скоро выйдет новый альбом Земфиры`));
 
   test(`Articles count is changed`, () => request(app).get(`/articles`).expect((res) => expect(res.body.length).toBe(7))
   );
@@ -181,9 +188,10 @@ describe(`API refuses to create an article if data is invalid`, () => {
   let app;
 
   const newArticle = {
-    title: `Новый альбом Земфиры`,
+    title: `Скоро выйдет новый альбом Земфиры`,
     announce: `Обзор новой пластинки знаменитой певицы`,
-    category: [1],
+    categories: [1],
+    date: `2020-10-11`,
   };
 
   beforeAll(async () => {
@@ -198,6 +206,29 @@ describe(`API refuses to create an article if data is invalid`, () => {
     }
   });
 
+  test(`When field type is wrong response code is 400`, async () => {
+    const badOffers = [
+      {...newArticle, title: 123},
+      {...newArticle, announce: [`a`, `b`]},
+      {...newArticle, categories: `Категория`},
+      // todo к вопросу про адаптер для даты
+      // {...newArticle, date: 123},
+    ];
+    for (const badOffer of badOffers) {
+      await request(app).post(`/articles`).send(badOffer).expect(HttpCode.BAD_REQUEST);
+    }
+  });
+
+  test(`When field value is wrong response code is 400`, async () => {
+    const badOffers = [
+      {...newArticle, title: `too short`},
+      {...newArticle, announce: ``},
+      {...newArticle, categories: []}
+    ];
+    for (const badOffer of badOffers) {
+      await request(app).post(`/articles`).send(badOffer).expect(HttpCode.BAD_REQUEST);
+    }
+  });
 });
 
 describe(`API changes existent article`, () => {
@@ -205,10 +236,11 @@ describe(`API changes existent article`, () => {
   let response;
 
   const newArticle = {
-    title: `Новый альбом Земфиры`,
+    title: `Скоро выйдет новый альбом Земфиры`,
     announce: `Обзор новой пластинки знаменитой певицы`,
     categories: [1],
-    text: `На альбоме огромное количество классных песен. Красивые стихи. Прекрасная музыка.`
+    text: `На альбоме огромное количество классных песен. Красивые стихи. Прекрасная музыка.`,
+    date: `2021-01-01`,
   };
 
   beforeAll(async () => {
@@ -218,7 +250,7 @@ describe(`API changes existent article`, () => {
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Offer is really changed`, () => request(app).get(`/articles/1`).expect((res) => expect(res.body.title).toBe(`Новый альбом Земфиры`))
+  test(`Offer is really changed`, () => request(app).get(`/articles/1`).expect((res) => expect(res.body.title).toBe(`Скоро выйдет новый альбом Земфиры`))
   );
 
 });
@@ -228,15 +260,16 @@ describe(`API NOT changes non-existent article`, () => {
   let response;
 
   const validArticle = {
-    title: `Новый альбом Земфиры`,
+    title: `Скоро выйдет новый альбом Земфиры`,
     announce: `Обзор новой пластинки знаменитой певицы`,
     categories: [1],
-    text: `На альбоме огромное количество классных песен. Красивые стихи. Прекрасная музыка.`
+    text: `На альбоме огромное количество классных песен. Красивые стихи. Прекрасная музыка.`,
+    date: `2020-01-02`,
   };
 
   beforeAll(async () => {
     app = await createAPI();
-    response = await request(app).put(`/articles/NULL`).send(validArticle);
+    response = await request(app).put(`/articles/123456789`).send(validArticle);
   });
 
   test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));
@@ -282,7 +315,7 @@ describe(`API NOT delete non-existent article`, () => {
 
   beforeAll(async () => {
     app = await createAPI();
-    response = await request(app).delete(`/articles/NULL`);
+    response = await request(app).delete(`/articles/123456789`);
   });
 
   test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));
@@ -340,7 +373,7 @@ describe(`API refuses to create a comment to non-existent article`, () => {
 
   beforeAll(async () => {
     app = await createAPI();
-    response = await request(app).post(`/articles/NULL/comments`).send(newComment);
+    response = await request(app).post(`/articles/123456789/comments`).send(newComment);
   });
 
   test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));
@@ -394,7 +427,7 @@ describe(`API refuses to delete a comment to non-existent article`, () => {
 
   beforeAll(async () => {
     app = await createAPI();
-    response = await request(app).delete(`/articles/NULL/comments/11`);
+    response = await request(app).delete(`/articles/123456789/comments/11`);
   });
 
   test(`Status code 404`, () => expect(response.statusCode).toBe(HttpCode.NOT_FOUND));

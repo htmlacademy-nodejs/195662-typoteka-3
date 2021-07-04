@@ -106,6 +106,6 @@ block content
             a.preview__comment(href='#')
               | Комментарии
               span.preview__cloud
-              b.preview__comment-count #{article.comments.length}
+              b.preview__comment-count #{article.commentCount}
       .preview__toggle-wrapper
         +pagination(page, totalPages, 5)

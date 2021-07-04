@@ -1,10 +1,12 @@
 'use strict';
 
 const {Router} = require(`express`);
+const {DateTime} = require(`luxon`);
 
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
+const bodyParser = require(`body-parser`);
 const UPLOAD_DIR = `../upload/img/`;
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
 
@@ -21,40 +23,89 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage});
 
+const urlencodedParser = bodyParser.urlencoded({
+  extended: false,
+});
+
 articlesRouter.get(`/category/:id`, (req, res) => res.render(`articles/publications-by-category`));
 
-articlesRouter.post(`/add`,
+articlesRouter.get(`/add`, async (req, res) => {
+  const {error} = req.query;
+  const categories = await api.getCategories();
+  const date = DateTime.now().toFormat(`dd.MM.yyyy`);
+  res.render(`articles/post-add`, {date, categories, error});
+});
+articlesRouter.post(
+    `/add`,
     upload.single(`photo`),
     async (req, res) => {
       const {body} = req;
-      console.log(req.body);
       const articleData = {
         title: body.title,
         categories: body.categories,
-        date: body.date,
+        date: DateTime.fromFormat(body.date, `dd.MM.yyyy`).toFormat(`yyyy-MM-dd`),
         announce: body.announce,
+        text: body.text,
       };
       try {
         await api.createArticle(articleData);
         res.redirect(`/my`);
-      } catch (e) {
-        res.redirect(`back`);
+      } catch (error) {
+        res.redirect(`/articles/add?error=${encodeURIComponent(error.response.data)}`);
       }
     }
 );
-articlesRouter.get(`/add`, async (req, res) => {
-  const categories = await api.getCategories();
-  res.render(`articles/post-add`, {categories});
+articlesRouter.get(`/:id`, async (req, res) => {
+  const {id} = req.params;
+  const {error} = req.query;
+  const article = await api.getArticle(id, true);
+  article.date = DateTime.fromISO(article.date).toFormat(`dd.MM.yyyy`);
+  res.render(`articles/post`, {id, article, error});
 });
-articlesRouter.get(`/:id`, (req, res) => res.render(`articles/post`));
 articlesRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
+  const {error} = req.query;
   const [article, categories] = await Promise.all([
     api.getArticle(id),
     api.getCategories()
   ]);
-  res.render(`articles/post-edit`, {article, categories});
+  article.date = DateTime.fromISO(article.date).toFormat(`dd.MM.yyyy`);
+  res.render(`articles/post-edit`, {id, article, categories, error});
 });
-
+articlesRouter.post(
+    `/edit/:id`,
+    upload.single(`photo`),
+    async (req, res) => {
+      const {body} = req;
+      const {id} = req.params;
+      const articleData = {
+        title: body.title,
+        categories: body.categories,
+        date: DateTime.fromFormat(body.date, `dd.MM.yyyy`).toFormat(`yyyy-MM-dd`),
+        announce: body.announce,
+        text: body.text,
+      };
+      try {
+        await api.updateArticle(id, articleData);
+        res.redirect(`/my`);
+      } catch (error) {
+        res.redirect(`/articles/edit/${id}?error=${encodeURIComponent(error.response.data)}`);
+      }
+    }
+);
+articlesRouter.post(
+    `/:id/comments`,
+    urlencodedParser,
+    async (req, res) => {
+      const {id} = req.params;
+      const {comment} = req.body;
+      try {
+        await api.createComment(id, {text: comment});
+        res.redirect(`/articles/${id}`);
+      } catch (error) {
+        res.redirect(`/articles/${id}?error=${encodeURIComponent(error.response.data)}`);
+      }
+    }
+);
 
 module.exports = articlesRouter;

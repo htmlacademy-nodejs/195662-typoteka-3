@@ -14,6 +14,10 @@ module.exports = class ArticleModel {
       picture: {
         type: DataTypes.TEXT,
       },
+      date: {
+        type: DataTypes.DATEONLY,
+        allowNull: false
+      },
       announce: {
         type: DataTypes.TEXT,
         allowNull: false
